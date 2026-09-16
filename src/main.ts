@@ -83,12 +83,45 @@ const menuPage = document.getElementById('menu-page')!;
 const gamePage = document.getElementById('game-page')!;
 
 // DOM Elements: Menu Page & Prologue
+const menuContinueBtn = document.getElementById('menu-continue-btn') as HTMLButtonElement | null;
+const menuContinueText = document.getElementById('menu-continue-text') as HTMLSpanElement | null;
 const menuPlayBtn = document.getElementById('menu-play-btn')!;
 const menuPrologueBtn = document.getElementById('menu-prologue-btn') as HTMLButtonElement | null;
 const menuInfoBtn = document.getElementById('menu-info-btn')!;
 const menuInfoModal = document.getElementById('menu-info-modal')!;
 const menuInfoCloseBtn = document.getElementById('menu-info-close-btn')!;
 const menuInfoPlayBtn = document.getElementById('menu-info-play-btn')!;
+
+function getSavedLevel(): number | null {
+  try {
+    const val = localStorage.getItem('perspeqtive_saved_level');
+    if (!val) return null;
+    const lvl = parseInt(val, 10);
+    return (lvl >= 1 && lvl <= 4) ? lvl : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function saveCurrentLevelProgress(lvl: number) {
+  try {
+    localStorage.setItem('perspeqtive_saved_level', lvl.toString());
+  } catch (_) {}
+}
+
+function updateContinueButtonUI() {
+  const savedLevel = getSavedLevel();
+  if (menuContinueBtn) {
+    if (savedLevel && savedLevel >= 1) {
+      menuContinueBtn.classList.remove('hidden');
+      if (menuContinueText) {
+        menuContinueText.textContent = `CONTINUE (LVL ${savedLevel})`;
+      }
+    } else {
+      menuContinueBtn.classList.add('hidden');
+    }
+  }
+}
 
 // Prologue Modal Elements
 const introModal = document.getElementById('intro-modal') as HTMLElement | null;
@@ -126,7 +159,6 @@ const INTRO_SLIDES: IntroSlide[] = [
 ];
 
 let currentIntroSlide = 0;
-let hasSeenIntro = false;
 let introCompleteCallback: (() => void) | null = null;
 
 function renderIntroSlide(idx: number) {
@@ -170,7 +202,6 @@ function openIntroModal(onComplete?: () => void) {
 
 function closeIntroModal() {
   if (introModal) introModal.classList.add('hidden');
-  hasSeenIntro = true;
   if (introCompleteCallback) {
     const cb = introCompleteCallback;
     introCompleteCallback = null;
@@ -279,6 +310,7 @@ function handleRouteChange(state: RouteState) {
     gamePage.classList.add('hidden');
     closeEscapeMenu();
     if (menuInfoModal) menuInfoModal.classList.add('hidden');
+    updateContinueButtonUI();
   } else {
     menuPage.classList.add('hidden');
     gamePage.classList.remove('hidden');
@@ -320,6 +352,7 @@ function setBedroomDoorState(open: boolean) {
 
 function loadLevel(level: number) {
   currentLevel = level;
+  saveCurrentLevelProgress(level);
   qpm.clear();
   
   playerProp = qpm.acquireProperty();
@@ -1752,17 +1785,26 @@ function setupMenuUI() {
     });
   }
 
+  updateContinueButtonUI();
+
+  if (menuContinueBtn) {
+    menuContinueBtn.addEventListener('click', () => {
+      const savedLevel = getSavedLevel() || 1;
+      startBackgroundMusic();
+      updateMusicButtonUI();
+      router.navigate('game', savedLevel);
+    });
+  }
+
   if (menuPlayBtn) {
     menuPlayBtn.addEventListener('click', () => {
       startBackgroundMusic();
       updateMusicButtonUI();
-      if (!hasSeenIntro) {
-        openIntroModal(() => {
-          router.navigate('game', currentLevel);
-        });
-      } else {
-        router.navigate('game', currentLevel);
-      }
+      // Play always starts a new game at Level 1 and starts with the story
+      saveCurrentLevelProgress(1);
+      openIntroModal(() => {
+        router.navigate('game', 1);
+      });
     });
   }
 
@@ -1791,13 +1833,11 @@ function setupMenuUI() {
       menuInfoModal.classList.add('hidden');
       startBackgroundMusic();
       updateMusicButtonUI();
-      if (!hasSeenIntro) {
-        openIntroModal(() => {
-          router.navigate('game', currentLevel);
-        });
-      } else {
-        router.navigate('game', currentLevel);
-      }
+      // Also starts a new game with the story
+      saveCurrentLevelProgress(1);
+      openIntroModal(() => {
+        router.navigate('game', 1);
+      });
     });
   }
 }
@@ -1929,10 +1969,13 @@ function setupVictoryUI() {
     victoryNextBtn.addEventListener('click', () => {
       victoryModal.classList.add('hidden');
       if (currentLevel === 1) {
+        saveCurrentLevelProgress(2);
         router.navigate('game', 2);
       } else if (currentLevel === 2) {
+        saveCurrentLevelProgress(3);
         router.navigate('game', 3);
       } else if (currentLevel === 3) {
+        saveCurrentLevelProgress(4);
         router.navigate('game', 4);
       } else {
         router.navigate('menu');

@@ -1103,6 +1103,33 @@ body {
   transform: translateX(24px);
 }
 
+#menu-continue-btn {
+  color: #00f0ff;
+  font-size: 2.6rem;
+  text-shadow: 0 0 25px rgba(0, 240, 255, 0.45);
+}
+
+#menu-continue-btn::before {
+  width: 14px;
+  background: #00f0ff;
+  box-shadow: 0 0 16px #00f0ff;
+}
+
+#menu-continue-btn:hover {
+  color: #00ff88;
+  text-shadow: 0 0 35px rgba(0, 255, 136, 0.8);
+}
+
+#menu-continue-btn:hover::before {
+  width: 24px;
+  background: #00ff88;
+  box-shadow: 0 0 20px #00ff88;
+}
+
+#menu-continue-btn.hidden {
+  display: none !important;
+}
+
 #menu-play-btn {
   color: #fff;
   font-size: 2.8rem;
