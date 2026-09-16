@@ -915,6 +915,39 @@ body {
   text-transform: uppercase;
 }
 
+.header-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.music-toggle-btn {
+  background: rgba(230, 160, 40, 0.12);
+  border: 1px solid rgba(230, 160, 40, 0.45);
+  color: var(--noir-gold);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.music-toggle-btn:hover {
+  background: rgba(230, 160, 40, 0.28);
+  border-color: var(--noir-gold);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.music-toggle-btn.muted {
+  background: rgba(100, 100, 100, 0.15);
+  border-color: rgba(160, 160, 160, 0.3);
+  color: #888;
+}
+
 .pause-icon-btn {
   background: rgba(216, 184, 136, 0.1);
   border: 1px solid var(--sepia-dim);

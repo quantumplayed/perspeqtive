@@ -95,7 +95,10 @@
             <span class="case-stamp" id="level-stamp">LEVEL 1 // CASE #702</span>
             <h2 class="level-banner-title" id="current-level-tag">LEVEL 1: THE SPLIT APARTMENT</h2>
           </div>
-          <button id="pause-btn" class="pause-icon-btn" title="Pause / Menu (Esc)">⚙ MENU</button>
+          <div class="header-action-group">
+            <button id="music-toggle-btn" class="music-toggle-btn" title="Toggle Noir Detective Music">🎵 MUSIC: ON</button>
+            <button id="pause-btn" class="pause-icon-btn" title="Pause / Menu (Esc)">⚙ MENU</button>
+          </div>
         </header>
 
         <!-- Bottom Left Character & Dialogue HUD (Ready for dialogue boxes) -->
@@ -325,6 +328,9 @@
                 </button>
               </div>
               <div class="esc-divider"><span>OPERATIONS</span></div>
+              <button id="esc-music-btn" class="esc-btn">
+                <span class="esc-btn-icon">🎵</span> <span id="esc-music-text">SOUNDTRACK: ON</span>
+              </button>
               <button id="esc-restart-btn" class="esc-btn">
                 <span class="esc-btn-icon">↺</span> RESTART CURRENT LEVEL
               </button>

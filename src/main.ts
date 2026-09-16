@@ -14,7 +14,11 @@ import {
   playPetChirp,
   triggerScreenShake,
   showFloatingText,
-  ensureAmbientSound
+  ensureAmbientSound,
+  startBackgroundMusic,
+  toggleBackgroundMusic,
+  setMusicDimension,
+  isMusicPlaying
 } from "./audio";
 
 let qpm: QuantumPropertyManager;
@@ -136,8 +140,11 @@ const restartBtn = document.getElementById('restart-btn')!;
 const victoryMenuBtn = document.getElementById('victory-menu-btn')!;
 
 const pauseBtn = document.getElementById('pause-btn')!;
+const musicToggleBtn = document.getElementById('music-toggle-btn') as HTMLButtonElement | null;
 const escapeMenu = document.getElementById('escape-menu')!;
 const escResumeBtn = document.getElementById('esc-resume-btn')!;
+const escMusicBtn = document.getElementById('esc-music-btn') as HTMLButtonElement | null;
+const escMusicText = document.getElementById('esc-music-text') as HTMLSpanElement | null;
 const escLvl1Btn = document.getElementById('esc-lvl1-btn')!;
 const escLvl2Btn = document.getElementById('esc-lvl2-btn')!;
 const escLvl3Btn = document.getElementById('esc-lvl3-btn')!;
@@ -1132,6 +1139,7 @@ function gameLoop(now: number) {
         scrollTarget = null;
         const finalDim = scrollPos < 0.5 ? 0 : 1;
         playShift(finalDim);
+        setMusicDimension(finalDim);
         triggerScreenShake(1.5, 60);
         showFloatingText(finalDim === 0 ? "DIMENSION |0⟩" : "DIMENSION |1⟩", playerX + 32, playerY - 14, finalDim === 0 ? "#00f0ff" : "#ff3366");
         if (actualDelta !== 0) {
@@ -1629,9 +1637,39 @@ function formatState(prob0: number, prob1: number) {
   return `${p0}% |0> + ${p1}% |1>`;
 }
 
+function updateMusicButtonUI() {
+  const playing = isMusicPlaying();
+  if (musicToggleBtn) {
+    musicToggleBtn.textContent = playing ? "🎵 MUSIC: ON" : "🔇 MUSIC: OFF";
+    musicToggleBtn.classList.toggle('muted', !playing);
+  }
+  if (escMusicText) {
+    escMusicText.textContent = playing ? "SOUNDTRACK: ON" : "SOUNDTRACK: OFF";
+  }
+}
+
 function setupMenuUI() {
+  // Resume & start background music on initial user interaction anywhere
+  const triggerAudioOnce = () => {
+    startBackgroundMusic();
+    updateMusicButtonUI();
+  };
+  ['pointerdown', 'keydown', 'click'].forEach(evt => {
+    window.addEventListener(evt, triggerAudioOnce, { once: true });
+  });
+
+  if (musicToggleBtn) {
+    musicToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleBackgroundMusic();
+      updateMusicButtonUI();
+    });
+  }
+
   if (menuPlayBtn) {
     menuPlayBtn.addEventListener('click', () => {
+      startBackgroundMusic();
+      updateMusicButtonUI();
       router.navigate('game', currentLevel);
     });
   }
@@ -1651,6 +1689,8 @@ function setupMenuUI() {
   if (menuInfoPlayBtn) {
     menuInfoPlayBtn.addEventListener('click', () => {
       menuInfoModal.classList.add('hidden');
+      startBackgroundMusic();
+      updateMusicButtonUI();
       router.navigate('game', currentLevel);
     });
   }
@@ -1677,6 +1717,13 @@ function closeEscapeMenu() {
 function setupEscapeMenu() {
   if (pauseBtn) {
     pauseBtn.addEventListener('click', openEscapeMenu);
+  }
+
+  if (escMusicBtn) {
+    escMusicBtn.addEventListener('click', () => {
+      toggleBackgroundMusic();
+      updateMusicButtonUI();
+    });
   }
   
   if (escResumeBtn) {
