@@ -2,7 +2,6 @@ import { ensureLoaded, QuantumPropertyManager, getModule } from "quantum-forge/q
 import { router, type RouteState } from "./router";
 import {
   playFootstep,
-  playShift,
   playGrab,
   playDrop,
   playPlateActivate,
@@ -1228,10 +1227,7 @@ function gameLoop(now: number) {
         scrollPos = scrollTarget;
         scrollTarget = null;
         const finalDim = scrollPos < 0.5 ? 0 : 1;
-        playShift(finalDim);
         setMusicDimension(finalDim);
-        triggerScreenShake(1.5, 60);
-        showFloatingText(finalDim === 0 ? "DIMENSION |0⟩" : "DIMENSION |1⟩", playerX + 32, playerY - 14, finalDim === 0 ? "#00f0ff" : "#ff3366");
         if (actualDelta !== 0) {
           if (isHolding) qf.shift(boxProp, 1.0, [playerProp.is(1)]);
           if (isPetOnShoulder) qf.shift(petProp, 1.0, [playerProp.is(1)]);
@@ -1240,7 +1236,7 @@ function gameLoop(now: number) {
           if (isPetOnShoulder) qf.shift(petProp, 1.0, [playerProp.is(1)]);
         }
       } else {
-        const step = diff * 5.0 * dt; // Smooth snap
+        const step = diff * 4.0 * dt; // Smooth fluid snap through purple
         scrollPos += step;
         if (isHolding) qf.shift(boxProp, 1.0, [playerProp.is(1)]);
         if (isPetOnShoulder) qf.shift(petProp, 1.0, [playerProp.is(1)]);
@@ -1455,8 +1451,8 @@ function renderQuantumScene() {
     plateStateSpan.textContent = formatState(plProb0, plProb1);
   }
   
-  // Pure Red and Blue only — no yellow or rainbow phase!
-  const targetHue = scrollPos < 0.5 ? 215 : 355; // 215 = Electric Blue for |0>, 355 = Neon Red for |1>
+  // Smooth continuous transition from Electric Blue (215) -> Quantum Violet/Purple (~285) -> Neon Red (355)
+  const targetHue = Math.round(215 + scrollPos * 140);
   document.documentElement.style.setProperty('--theme-hue', `${targetHue}`);
   const playerViewingDimension = scrollPos < 0.5 ? 0 : 1;
   const viewFactor = playerViewingDimension === 0 ? (1 - scrollPos) : scrollPos;
