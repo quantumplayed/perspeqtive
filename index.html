@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perspeqtive — Quantum Noir</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- ========================================================
+           PAGE 1: MAIN MENU (Landing View)
+           ======================================================== -->
+      <div id="menu-page" class="app-page">
+        <div class="menu-ambient-glow"></div>
+        <div class="menu-film-grain"></div>
+
+        <div class="de-menu-container">
+          <!-- Title & Subtitle -->
+          <div class="de-menu-header">
+            <h1 class="de-menu-title">PERSPEQTIVE</h1>
+            <p class="de-menu-tagline">Julian's Apartment — Quantum Noir Escape</p>
+          </div>
+
+          <!-- Main Menu Action Buttons -->
+          <div class="de-menu-actions">
+            <button id="menu-play-btn" class="de-menu-btn">
+              <span class="de-btn-text">PLAY</span>
+            </button>
+            <button id="menu-info-btn" class="de-menu-btn">
+              <span class="de-btn-text">MORE INFO</span>
+            </button>
+          </div>
+
+          <div class="de-menu-footer">
+            CASE #702 // CLASSIFIED
+          </div>
+        </div>
+
+        <!-- More Info Overlay Modal -->
+        <div id="menu-info-modal" class="info-modal-backdrop hidden">
+          <div class="info-modal-card">
+            <div class="info-modal-header">
+              <div class="case-stamp">DOSSIER #702 // CLASSIFIED BRIEFING</div>
+              <h2>THE QUANTUM PERSPECTIVE CASE</h2>
+              <button id="menu-info-close-btn" class="modal-close-btn" title="Close">✕</button>
+            </div>
+            
+            <div class="info-modal-body">
+              <section class="info-section">
+                <h3>THE DISAPPEARANCE</h3>
+                <p>You have not heard from your colleague <strong>Julian</strong> in days. Unanswered calls and urgent messages led you to his flat with an emergency spare key.</p>
+                <p>Upon stepping inside, the apartment begins to warp: the living space exists simultaneously in two superimposed dimensional states — <strong>Ground Reality |0⟩</strong> and <strong>Excited Reality |1⟩</strong>.</p>
+              </section>
+
+              <section class="info-section">
+                <h3>QUANTUM PHENOMENA</h3>
+                <ul>
+                  <li><strong>Perspective Shift (Scroll Wheel)</strong>: Rotates your observation between |0⟩ and |1⟩. Rooms, objects, and walls change depending on your state.</li>
+                  <li><strong>Decoherence</strong>: Objects moved in |1⟩ decay rapidly unless observed or stabilized in the |0⟩ Floor Vault.</li>
+                  <li><strong>Laplace (Bearded Dragon)</strong>: Julian's pet is also quantum-entangled. Carry him on your shoulder with [F] to bridge states.</li>
+                  <li><strong>Phase Walls</strong>: Certain doors and walls exist in |0⟩ but dissolve completely in |1⟩, allowing you to walk through and phase into locked chambers.</li>
+                </ul>
+              </section>
+
+              <section class="info-section">
+                <h3>CONTROLS</h3>
+                <div class="info-ctrl-grid">
+                  <div><strong>W, A, S, D</strong> — Move investigator</div>
+                  <div><strong>Scroll Wheel</strong> — Shift perspective (|0⟩ ↔ |1⟩)</div>
+                  <div><strong>E</strong> — Pick up / Drop & measure evidence box</div>
+                  <div><strong>F</strong> — Pick up / Put down Laplace (on shoulder)</div>
+                  <div><strong>ESC</strong> — Open in-game menu / Pause</div>
+                </div>
+              </section>
+            </div>
+
+            <div class="info-modal-footer">
+              <button id="menu-info-play-btn" class="modal-play-btn">BEGIN INVESTIGATION</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           PAGE 2: GAME PAGE (Interactive Escape Room)
+           ======================================================== -->
+      <div id="game-page" class="app-page hidden">
+        <!-- Centered Level Header Banner at Top -->
+        <header class="level-banner">
+          <div class="level-banner-meta">
+            <span class="case-stamp" id="level-stamp">LEVEL 1 // CASE #702</span>
+            <h2 class="level-banner-title" id="current-level-tag">LEVEL 1: THE SPLIT APARTMENT</h2>
+          </div>
+          <button id="pause-btn" class="pause-icon-btn" title="Pause / Menu (Esc)">⚙ MENU</button>
+        </header>
+
+        <!-- Bottom Left Character & Dialogue HUD (Ready for dialogue boxes) -->
+        <aside class="player-dialogue-anchor" id="player-dialogue-anchor">
+          <div class="dialogue-portrait-wrapper">
+            <div class="portrait-frame">
+              <img class="dossier-portrait" src="/detective_portrait.jpg" alt="Investigator Julian" />
+              <div class="portrait-vignette"></div>
+              <div class="portrait-status-dot" title="Reality Stable"></div>
+            </div>
+          </div>
+          <div class="dialogue-box">
+            <div class="dialogue-speaker-bar">
+              <span class="speaker-name">INVESTIGATOR</span>
+              <span class="speaker-companion">LAPLACE // OBSERVING</span>
+            </div>
+            <p id="system-status" class="dialogue-text">Investigator arrived at Julian's apartment.</p>
+          </div>
+        </aside>
+        
+        <!-- Game World & 12-Minutes Style Apartment View -->
+        <div class="game-world">
+          <div class="ambient-vignette"></div>
+          
+          <!-- Context Interaction Prompt -->
+          <div id="interaction-prompt" class="hidden">
+            <span id="prompt-text">Press [E] to pick up box</span>
+          </div>
+          
+          <!-- 512x512 Game Container -->
+          <div class="iso-container">
+            <!-- The Painterly Apartment Floor -->
+            <div class="iso-floor" id="floor">
+              <div class="apartment-lamp-light"></div>
+
+              <!-- The Dimensional Containment Vault (Target) located in the floor -->
+              <div class="vault" id="pressure-plate">
+                <div class="vault-inner"></div>
+                
+                <!-- Holographic Crate Plug-In Target -->
+                <div class="vault-hologram" id="vault-hologram">
+                  <div class="holo-crate-box">
+                    <span class="holo-crate-icon">📦</span>
+                  </div>
+                  <div class="holo-dock-arrow">
+                    <span>▼</span>
+                    <span class="dock-callout-text">DOCK CRATE HERE</span>
+                  </div>
+                </div>
+                
+                <!-- Mechanical Receptacle Corner Guides -->
+                <div class="vault-corner c-tl"></div>
+                <div class="vault-corner c-tr"></div>
+                <div class="vault-corner c-bl"></div>
+                <div class="vault-corner c-br"></div>
+                
+                <!-- Tactical Overhead Tag Banner -->
+                <div class="vault-tag-banner">
+                  <span class="vault-led"></span>
+                  <span class="vault-title" id="vault-label-text">|0⟩ FLOOR VAULT</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Level 2 Washroom / Toilet Added Room (Right Adjoining) -->
+            <div id="washroom-room" class="washroom-room hidden">
+              <div class="washroom-fixture washroom-toilet">🚽</div>
+              <div class="washroom-fixture washroom-sink">🚰</div>
+              <div class="washroom-mirror"></div>
+              <div class="washroom-tag">WASHROOM</div>
+            </div>
+
+            <!-- Bathroom Doorway Archway & Quantum Door -->
+            <div id="bathroom-doorway" class="bathroom-doorway hidden">
+              <div class="doorway-sill"></div>
+              <div class="doorway-trim-top"></div>
+              <div class="doorway-trim-bottom"></div>
+            </div>
+
+            <div id="quantum-door" class="quantum-door hidden">
+              <div class="door-frame">
+                <div class="door-panel" id="door-panel">
+                  <div class="door-lock"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bedroom Chamber (Right Lower Wing) -->
+            <div id="bedroom-room" class="bedroom-room hidden">
+              <div class="room-ambient-glow"></div>
+              <div class="bedroom-tag">BEDROOM // ARCHIVE</div>
+            </div>
+
+            <!-- Bedroom Relay Doorway & Door -->
+            <div id="bedroom-door" class="bedroom-door hidden">
+              <div class="door-frame">
+                <div class="door-panel" id="bedroom-door-panel">
+                  <div class="door-lock"></div>
+                </div>
+                <div class="door-unlock-wave" id="bedroom-door-wave"></div>
+              </div>
+            </div>
+
+            <!-- Kitchenette Area -->
+            <div id="kitchen-room" class="kitchen-room hidden">
+              <div class="kitchen-tag">KITCHENETTE</div>
+            </div>
+
+            <!-- Level 3 Energy Barrier (Solid in |0>, Gone in |1>) -->
+            <div id="energy-barrier" class="energy-barrier hidden">
+              <div class="laser-beam"></div>
+              <div class="laser-beam"></div>
+              <div class="laser-beam"></div>
+              <div class="barrier-text">|0⟩ SECURE LASER GRID</div>
+            </div>
+
+            <!-- Level 3 Convergence Vault / Level 4 Second Vault -->
+            <div class="vault hidden" id="pressure-plate2">
+              <div class="vault-inner"></div>
+              <div class="vault-hologram">
+                <div class="holo-crate-box">
+                  <span class="holo-crate-icon">📦</span>
+                </div>
+                <div class="holo-dock-arrow">
+                  <span>▼</span>
+                  <span class="dock-callout-text">DOCK CRATE B</span>
+                </div>
+              </div>
+              <div class="vault-corner c-tl"></div>
+              <div class="vault-corner c-tr"></div>
+              <div class="vault-corner c-bl"></div>
+              <div class="vault-corner c-br"></div>
+              <div class="vault-tag-banner">
+                <span class="vault-led"></span>
+                <span class="vault-title">|1⟩ CONVERGENCE VAULT</span>
+              </div>
+            </div>
+            
+            <!-- Level 4 Second Evidence Crate -->
+            <div class="iso-entity box hidden" id="box2">
+              <div class="box-cube box2-cube"></div>
+            </div>
+            
+            <!-- The Investigator -->
+            <div class="iso-entity player" id="player">
+              <div class="player-sprite" id="player-sprite"></div>
+            </div>
+            
+            <!-- Laplace the Bearded Dragon (Autonomous Wanderer) -->
+            <div class="iso-entity pet" id="pet">
+              <div class="pet-sprite" id="pet-sprite"></div>
+            </div>
+            
+            <!-- The Main Evidence Crate -->
+            <div class="iso-entity box" id="box">
+              <div class="decoherence-hazard hidden" id="box-hazard"></div>
+              <div class="box-cube"></div>
+              
+              <!-- Floating Decoherence Timer HUD (Appears ONLY after dropping item) -->
+              <div class="box-decay-gauge hidden" id="box-decay-gauge">
+                <div class="decay-header">
+                  <span class="decay-icon" id="decay-icon">⏳</span>
+                  <span class="decay-label" id="box-decay-label">DECOHERENCE</span>
+                  <span class="decay-time" id="box-decay-time">25.0s</span>
+                </div>
+                <div class="decay-bar-track">
+                  <div class="decay-bar-fill" id="box-decay-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Victory Overlay Modal -->
+        <div id="victory-modal" class="victory-modal hidden">
+          <div class="victory-card">
+            <div class="victory-badge">CASE RESOLVED</div>
+            <h2 id="victory-title">DIMENSIONAL CONVERGENCE</h2>
+            <p id="victory-description">The quantum evidence has been secured and sealed inside the <strong>|0⟩ Floor Vault</strong>. Reality in Julian's apartment has stabilized.</p>
+            <div class="victory-stats">
+              <div class="stat-box">
+                <span class="stat-label">FINAL STATE</span>
+                <span class="stat-value">|00⟩</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">VAULT STATUS</span>
+                <span class="stat-value">LOCKED</span>
+              </div>
+            </div>
+            <div class="victory-actions">
+              <button id="victory-next-btn" class="victory-btn">CONTINUE TO NEXT LEVEL</button>
+              <button id="restart-btn" class="victory-btn secondary">RETRY LEVEL</button>
+              <button id="victory-menu-btn" class="victory-btn secondary">RETURN TO MAIN MENU</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- In-Game Escape Menu Modal -->
+        <div id="escape-menu" class="escape-modal-backdrop hidden">
+          <div class="escape-modal-card">
+            <div class="escape-modal-header">
+              <div class="case-stamp">INVESTIGATION PAUSED</div>
+              <h2>CASE ARCHIVE & OPTIONS</h2>
+            </div>
+            
+            <div class="escape-menu-options">
+              <button id="esc-resume-btn" class="esc-btn esc-btn-primary">
+                <span class="esc-btn-icon">▶</span> RESUME INVESTIGATION
+              </button>
+              <div class="esc-divider"><span>SELECT LEVEL</span></div>
+              <div class="esc-level-row">
+                <button id="esc-lvl1-btn" class="esc-btn esc-btn-level">
+                  <strong>LEVEL 1</strong>
+                  <span>The Split Apartment</span>
+                </button>
+                <button id="esc-lvl2-btn" class="esc-btn esc-btn-level">
+                  <strong>LEVEL 2</strong>
+                  <span>The Phased Washroom</span>
+                </button>
+                <button id="esc-lvl3-btn" class="esc-btn esc-btn-level">
+                  <strong>LEVEL 3</strong>
+                  <span>The Zeno Maze</span>
+                </button>
+                <button id="esc-lvl4-btn" class="esc-btn esc-btn-level">
+                  <strong>LEVEL 4</strong>
+                  <span>Entanglement Lock</span>
+                </button>
+              </div>
+              <div class="esc-divider"><span>OPERATIONS</span></div>
+              <button id="esc-restart-btn" class="esc-btn">
+                <span class="esc-btn-icon">↺</span> RESTART CURRENT LEVEL
+              </button>
+              <button id="esc-mainmenu-btn" class="esc-btn esc-btn-danger">
+                <span class="esc-btn-icon">⎋</span> RETURN TO MAIN MENU
+              </button>
+            </div>
+            <div class="esc-footer">Press [ESC] to quickly resume</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
