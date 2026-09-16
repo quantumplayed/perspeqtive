@@ -30,6 +30,9 @@
             <button id="menu-play-btn" class="de-menu-btn">
               <span class="de-btn-text">PLAY</span>
             </button>
+            <button id="menu-prologue-btn" class="de-menu-btn">
+              <span class="de-btn-text">PROLOGUE</span>
+            </button>
             <button id="menu-info-btn" class="de-menu-btn">
               <span class="de-btn-text">MORE INFO</span>
             </button>
@@ -80,6 +83,44 @@
 
             <div class="info-modal-footer">
               <button id="menu-info-play-btn" class="modal-play-btn">BEGIN INVESTIGATION</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prologue / Story Intro Sequence Modal -->
+        <div id="intro-modal" class="info-modal-backdrop hidden">
+          <div class="intro-modal-card">
+            <div class="intro-modal-header">
+              <div class="intro-stamp-row">
+                <span class="case-stamp">CASE #702 // PROLOGUE</span>
+                <span class="intro-slide-indicator" id="intro-slide-num">SLIDE 1 OF 3</span>
+              </div>
+              <button id="intro-skip-btn" class="intro-skip-btn" title="Skip Prologue">SKIP PROLOGUE ⏩</button>
+            </div>
+            
+            <div class="intro-modal-body">
+              <div class="intro-image-frame">
+                <img id="intro-image" class="intro-slide-img" src="/intro_slide1.jpg" alt="Prologue sequence" />
+                <div class="intro-image-vignette"></div>
+              </div>
+              
+              <div class="intro-text-pane">
+                <h3 id="intro-title" class="intro-caption-title">Rain on Rue Saint-Lambert // 23:42</h3>
+                <p id="intro-text" class="intro-caption-text">
+                  You haven't heard from Julian in days. After dozens of unanswered calls and missed meetings, silence turned into dread. You clutch the brass emergency spare key he entrusted to you last winter, stepping through the rain toward his building.
+                </p>
+              </div>
+
+              <div class="intro-progress-dots">
+                <span class="intro-dot active" data-slide="0"></span>
+                <span class="intro-dot" data-slide="1"></span>
+                <span class="intro-dot" data-slide="2"></span>
+              </div>
+            </div>
+
+            <div class="intro-modal-footer">
+              <button id="intro-prev-btn" class="intro-nav-btn" disabled>◀ PREVIOUS</button>
+              <button id="intro-next-btn" class="intro-nav-btn intro-nav-btn-primary">CONTINUE ▶</button>
             </div>
           </div>
         </div>
@@ -330,6 +371,9 @@
               <div class="esc-divider"><span>OPERATIONS</span></div>
               <button id="esc-music-btn" class="esc-btn">
                 <span class="esc-btn-icon">🎵</span> <span id="esc-music-text">SOUNDTRACK: ON</span>
+              </button>
+              <button id="esc-prologue-btn" class="esc-btn">
+                <span class="esc-btn-icon">📜</span> VIEW CASE PROLOGUE
               </button>
               <button id="esc-restart-btn" class="esc-btn">
                 <span class="esc-btn-icon">↺</span> RESTART CURRENT LEVEL

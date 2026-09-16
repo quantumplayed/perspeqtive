@@ -83,12 +83,101 @@ let scrollTarget: number | null = null;
 const menuPage = document.getElementById('menu-page')!;
 const gamePage = document.getElementById('game-page')!;
 
-// DOM Elements: Menu Page
+// DOM Elements: Menu Page & Prologue
 const menuPlayBtn = document.getElementById('menu-play-btn')!;
+const menuPrologueBtn = document.getElementById('menu-prologue-btn') as HTMLButtonElement | null;
 const menuInfoBtn = document.getElementById('menu-info-btn')!;
 const menuInfoModal = document.getElementById('menu-info-modal')!;
 const menuInfoCloseBtn = document.getElementById('menu-info-close-btn')!;
 const menuInfoPlayBtn = document.getElementById('menu-info-play-btn')!;
+
+// Prologue Modal Elements
+const introModal = document.getElementById('intro-modal') as HTMLElement | null;
+const introSlideNum = document.getElementById('intro-slide-num') as HTMLElement | null;
+const introImage = document.getElementById('intro-image') as HTMLImageElement | null;
+const introTitle = document.getElementById('intro-title') as HTMLElement | null;
+const introText = document.getElementById('intro-text') as HTMLElement | null;
+const introPrevBtn = document.getElementById('intro-prev-btn') as HTMLButtonElement | null;
+const introNextBtn = document.getElementById('intro-next-btn') as HTMLButtonElement | null;
+const introSkipBtn = document.getElementById('intro-skip-btn') as HTMLButtonElement | null;
+const escPrologueBtn = document.getElementById('esc-prologue-btn') as HTMLButtonElement | null;
+
+interface IntroSlide {
+  image: string;
+  title: string;
+  text: string;
+}
+
+const INTRO_SLIDES: IntroSlide[] = [
+  {
+    image: "/intro_slide1.jpg",
+    title: "Rain on Rue Saint-Lambert // 23:42",
+    text: "You haven't heard from your friend Julian in days. After dozens of unanswered calls and frantic messages, silence turned into dread. You clutch the brass emergency key he gave you, stepping through the rain toward his building."
+  },
+  {
+    image: "/intro_slide2.jpg",
+    title: "Apartment 304 // Inside",
+    text: "The lock turns with a hollow clatter. Inside, the apartment is mostly empty, suspended in an eerie quiet. But the air itself feels bifurcated—an electrical hum vibrates across the floorboards, and strange dimensional rifts seem to split reality in two."
+  },
+  {
+    image: "/intro_slide3.jpg",
+    title: "The Workspace // Julian's Notes",
+    text: "On his desk lie scattered handwritten notes, equations of quantum superpositions, and personal mementos left in bizarre arrangements. Julian was attempting to bridge dimensions—and vanished within them. You must decipher his clues and restore his displaced artifacts to find him."
+  }
+];
+
+let currentIntroSlide = 0;
+let hasSeenIntro = false;
+let introCompleteCallback: (() => void) | null = null;
+
+function renderIntroSlide(idx: number) {
+  if (idx < 0 || idx >= INTRO_SLIDES.length) return;
+  currentIntroSlide = idx;
+  const slide = INTRO_SLIDES[idx];
+
+  if (introSlideNum) introSlideNum.textContent = `SLIDE ${idx + 1} OF ${INTRO_SLIDES.length}`;
+  if (introTitle) introTitle.textContent = slide.title;
+  if (introText) introText.textContent = slide.text;
+
+  if (introImage) {
+    introImage.style.opacity = '0.3';
+    introImage.style.transform = 'scale(1.03)';
+    setTimeout(() => {
+      if (introImage) {
+        introImage.src = slide.image;
+        introImage.style.opacity = '1';
+        introImage.style.transform = 'scale(1)';
+      }
+    }, 120);
+  }
+
+  const dots = document.querySelectorAll('.intro-dot');
+  dots.forEach((dot, dIdx) => {
+    dot.classList.toggle('active', dIdx === idx);
+  });
+
+  if (introPrevBtn) introPrevBtn.disabled = idx === 0;
+  if (introNextBtn) {
+    introNextBtn.textContent = idx === INTRO_SLIDES.length - 1 ? "ENTER APARTMENT ▶" : "CONTINUE ▶";
+  }
+}
+
+function openIntroModal(onComplete?: () => void) {
+  introCompleteCallback = onComplete || null;
+  currentIntroSlide = 0;
+  renderIntroSlide(0);
+  if (introModal) introModal.classList.remove('hidden');
+}
+
+function closeIntroModal() {
+  if (introModal) introModal.classList.add('hidden');
+  hasSeenIntro = true;
+  if (introCompleteCallback) {
+    const cb = introCompleteCallback;
+    introCompleteCallback = null;
+    cb();
+  }
+}
 
 // DOM Elements: HUD & Telemetry
 const playerStateSpan = document.getElementById('player-state');
@@ -169,6 +258,7 @@ async function init() {
 
   setupInput();
   setupMenuUI();
+  setupIntroModal();
   setupEscapeMenu();
   setupVictoryUI();
   
@@ -1670,7 +1760,21 @@ function setupMenuUI() {
     menuPlayBtn.addEventListener('click', () => {
       startBackgroundMusic();
       updateMusicButtonUI();
-      router.navigate('game', currentLevel);
+      if (!hasSeenIntro) {
+        openIntroModal(() => {
+          router.navigate('game', currentLevel);
+        });
+      } else {
+        router.navigate('game', currentLevel);
+      }
+    });
+  }
+
+  if (menuPrologueBtn) {
+    menuPrologueBtn.addEventListener('click', () => {
+      startBackgroundMusic();
+      updateMusicButtonUI();
+      openIntroModal();
     });
   }
   
@@ -1691,9 +1795,47 @@ function setupMenuUI() {
       menuInfoModal.classList.add('hidden');
       startBackgroundMusic();
       updateMusicButtonUI();
-      router.navigate('game', currentLevel);
+      if (!hasSeenIntro) {
+        openIntroModal(() => {
+          router.navigate('game', currentLevel);
+        });
+      } else {
+        router.navigate('game', currentLevel);
+      }
     });
   }
+}
+
+function setupIntroModal() {
+  if (introPrevBtn) {
+    introPrevBtn.addEventListener('click', () => {
+      if (currentIntroSlide > 0) renderIntroSlide(currentIntroSlide - 1);
+    });
+  }
+
+  if (introNextBtn) {
+    introNextBtn.addEventListener('click', () => {
+      if (currentIntroSlide < INTRO_SLIDES.length - 1) {
+        renderIntroSlide(currentIntroSlide + 1);
+      } else {
+        closeIntroModal();
+      }
+    });
+  }
+
+  if (introSkipBtn) {
+    introSkipBtn.addEventListener('click', () => {
+      closeIntroModal();
+    });
+  }
+
+  const dots = document.querySelectorAll('.intro-dot');
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const targetSlide = parseInt(dot.getAttribute('data-slide') || '0', 10);
+      renderIntroSlide(targetSlide);
+    });
+  });
 }
 
 function toggleEscapeMenu() {
@@ -1723,6 +1865,13 @@ function setupEscapeMenu() {
     escMusicBtn.addEventListener('click', () => {
       toggleBackgroundMusic();
       updateMusicButtonUI();
+    });
+  }
+
+  if (escPrologueBtn) {
+    escPrologueBtn.addEventListener('click', () => {
+      closeEscapeMenu();
+      openIntroModal();
     });
   }
   
